@@ -14,13 +14,17 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { CurrentUserPayload } from '../auth/decorators/current-user.decorator';
 import { PortfoliosService } from './portfolios.service';
+import { ValuationService } from './valuation.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('portfolios')
 export class PortfoliosController {
-  constructor(private readonly portfoliosService: PortfoliosService) {}
+  constructor(
+    private readonly portfoliosService: PortfoliosService,
+    private readonly valuationService: ValuationService,
+  ) {}
 
   @Post()
   create(
@@ -38,6 +42,14 @@ export class PortfoliosController {
   @Get(':id')
   findOne(@CurrentUser() user: CurrentUserPayload, @Param('id') id: string) {
     return this.portfoliosService.findOneOrThrow(user.userId, id);
+  }
+
+  @Get(':id/valuation')
+  getValuation(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('id') id: string,
+  ) {
+    return this.valuationService.getPortfolioValuation(user.userId, id);
   }
 
   @Patch(':id')
