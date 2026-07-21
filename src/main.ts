@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -10,6 +11,18 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('API de Gestión de Portafolio de Inversiones')
+    .setDescription(
+      'Auth, portafolios, activos, transacciones y cálculo de valorización',
+    )
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();

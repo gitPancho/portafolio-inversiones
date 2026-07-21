@@ -9,17 +9,21 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { CurrentUserPayload } from '../auth/decorators/current-user.decorator';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 
+@ApiTags('transactions')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('portfolios/:portfolioId/assets/:assetId/transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
+  @ApiOperation({ summary: 'Registrar una compra o venta' })
   @Post()
   create(
     @CurrentUser() user: CurrentUserPayload,
@@ -35,6 +39,7 @@ export class TransactionsController {
     );
   }
 
+  @ApiOperation({ summary: 'Listar transacciones de un activo' })
   @Get()
   findAll(
     @CurrentUser() user: CurrentUserPayload,
@@ -48,6 +53,7 @@ export class TransactionsController {
     );
   }
 
+  @ApiOperation({ summary: 'Eliminar una transacción (corrección)' })
   @Delete(':transactionId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
